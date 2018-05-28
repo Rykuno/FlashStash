@@ -27,7 +27,7 @@ class Decks extends Component {
 
   viewDeckDetail = deck => {
     const { navigation } = this.props;
-    navigation.navigate('InvidualDeck', deck);
+    navigation.navigate('IndividualDeck', deck);
   };
 
   deleteDecks = () => {
@@ -67,6 +67,25 @@ class Decks extends Component {
       </TouchableWithoutFeedback>
     ));
   };
+
+  EmptyListView = () => (
+    <View>
+      {this.props.decks.length > 0 || (
+        <Text
+          style={{
+            textAlign: 'center',
+            textAlignVertical: 'center',
+            marginTop: 50,
+            fontWeight: 'normal',
+            fontFamily: 'AvenirNext-Regular',
+            fontSize: 20,
+          }}
+        >
+          Click '+' to add a Study Deck!
+        </Text>
+      )}
+    </View>
+  );
 
   renderActionButton = () => {
     const { navigation } = this.props;
@@ -114,7 +133,7 @@ class Decks extends Component {
           <Icon name="md-create" style={styles.actionButtonIcon} />
         </ActionButton.Item>
         <ActionButton.Item
-          buttonColor="#B00020"
+          buttonColor="#e74c3c"
           title="Remove Deck"
           onPress={this.deleteDecks}
         >
@@ -130,8 +149,10 @@ class Decks extends Component {
 
     return (
       <View style={{ flex: 1, backgroundColor: '#f3f3f3' }}>
-        {/* Rest of the app comes ABOVE the action button component !*/}
-        <ScrollView style={{margin: 0}}>{this.renderDecks()}</ScrollView>
+        <ScrollView style={{ margin: 0 }}>
+          <this.EmptyListView />
+          {this.renderDecks()}
+        </ScrollView>
         {this.renderActionButton()}
       </View>
     );
@@ -155,8 +176,7 @@ const styles = StyleSheet.create({
   cardDeletionState: {
     borderColor: '#f50057'
   },
-  listcontainer: {
-  }
+  listcontainer: {}
 });
 
 const mapStateToProps = state => ({

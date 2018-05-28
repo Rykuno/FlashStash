@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Text,
+  TextInput,
+  StyleSheet
+} from 'react-native';
 import { connect } from 'react-redux';
 import {
   FormLabel,
@@ -17,18 +22,21 @@ class AddCard extends Component {
 
   addCard = () => {
     const { id } = this.props.navigation.state.params;
-    const { onAddCard } = this.props;
-    const { navigation } = this.props;
+    const { onAddCard, navigation } = this.props;
     onAddCard(id, this.state);
+    navigation.navigate('IndividualDeck');
   };
 
   verifyInput = form => {
-    const { question, answer } = this.state;
+    let { question, answer } = this.state;
+    question = question.trim();
+    answer = answer.trim();
+
     switch (form) {
       case 'question':
-        return question ? '' : 'Question is required';
+        return question.trim() ? '' : 'Question is required';
       case 'answer':
-        return answer ? '' : 'Answer is required';
+        return answer.trim() ? '' : 'Answer is required';
       default:
         break;
     }
@@ -43,7 +51,7 @@ class AddCard extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container}>
         <FormLabel>Question</FormLabel>
         <FormInput
           value={this.state.question}
@@ -65,9 +73,10 @@ class AddCard extends Component {
           backgroundColor={'#22A7F0'}
           disabled={this.submitButtonDisabled()}
           onPress={this.addCard}
+          icon={{ name: 'check' }}
           buttonStyle={styles.submitButton}
         />
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }

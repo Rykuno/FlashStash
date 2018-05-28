@@ -1,7 +1,7 @@
 import { createStackNavigator } from 'react-navigation';
 import Decks from '../components/Decks';
 import AddDeck from '../components/AddDeck';
-import InvidualDeck from '../components/IndividualDeck';
+import IndividualDeck from '../components/IndividualDeck';
 import AddCard from '../components/AddCard';
 import Quiz from '../components/Quiz';
 
@@ -18,10 +18,10 @@ const Navigator = createStackNavigator({
       title: 'Add Deck'
     }
   },
-  InvidualDeck: {
-    screen: InvidualDeck,
+  IndividualDeck: {
+    screen: IndividualDeck,
     navigationOptions: {
-      title: "IndividualDeck"
+      title: "Deck"
     }
   },
   AddCard: {

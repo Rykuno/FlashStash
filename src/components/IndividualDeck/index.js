@@ -2,22 +2,36 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Avatar, Divider, Button, Badge } from 'react-native-elements';
 import { connect } from 'react-redux';
+import { addCard } from '../../actions/deckActions';
 
 class IndividualDeck extends Component {
   addCard = id => {
     const { navigation } = this.props;
-    navigation.navigate('AddCard', { id: id });
+    navigation.navigate('AddCard', { id });
   };
 
-  startQuiz = deck => {
+  startQuiz = cards => {
     const { navigation } = this.props;
-    navigation.navigate('Quiz', deck);
+    navigation.navigate('Quiz', { cards });
+  };
+
+  getDeck = () => {
+    const { deck } = this.props;
+    return deck.find(obj => obj.id === this.props.navigation.state.params.id);
+  };
+
+  getAvatarInitials = name => {
+    if (!name) {
+      return '';
+    }
+
+    const split = name.split(' ');
+    return split.length > 1 ? `${split[0][0]}${split[1][0]}` : name[0];
   };
 
   render() {
-    const { deck } = this.props;
+    const deck = this.getDeck();
     const { name, id, description, category, cards } = deck;
-    console.log('STATE: ', this.props.deck.cards.length);
 
     return (
       <View style={styles.container}>
@@ -25,7 +39,7 @@ class IndividualDeck extends Component {
           containerStyle={styles.avatar}
           xlarge
           rounded
-          title="BP"
+          title={this.getAvatarInitials(name)}
           activeOpacity={0.7}
         />
         <Text style={styles.title}>{name}</Text>
@@ -35,12 +49,13 @@ class IndividualDeck extends Component {
             <Text>{category}</Text>
           </Badge>
           <Badge containerStyle={styles.badge}>
-            <Text>Cards: {this.props.deck.cards.length}</Text>
+            <Text>Cards: {cards.length}</Text>
           </Badge>
         </View>
         <Divider style={styles.divider} />
         <Button
           title="Add Card"
+          icon={{name: 'add'}}
           backgroundColor={'#22A7F0'}
           onPress={() => this.addCard(id)}
           buttonStyle={styles.button}
@@ -49,6 +64,7 @@ class IndividualDeck extends Component {
           title="Start Quiz"
           onPress={() => this.startQuiz(deck)}
           backgroundColor={'#64DD17'}
+          icon={{name: 'question-answer'}}
           buttonStyle={styles.button}
           disabled={cards.length === 0 ? true : false}
         />
@@ -94,12 +110,12 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = (state, ownProps) => ({
-  deck: state.decks.decks.find(
-    obj => obj.id === ownProps.navigation.state.params.id
-  )
+const mapStateToProps = state => ({
+  deck: state.decks.decks
 });
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+  onAddCard: card => dispatch(addCard(card))
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(IndividualDeck);
