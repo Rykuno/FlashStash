@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   ScrollView,
+  Text,
   TouchableWithoutFeedback
 } from 'react-native';
 import styled from 'styled-components';
@@ -13,6 +13,8 @@ import { Card, ListItem, Button, Badge, Avatar } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { deleteDeck } from '../../actions/deckActions';
 import * as Animatable from 'react-native-animatable';
+import { Fonts, Routes, Components, Colors } from '../../constants';
+const { MainText, AltText } = Components;
 
 class Decks extends Component {
   state = {
@@ -26,8 +28,9 @@ class Decks extends Component {
   };
 
   viewDeckDetail = deck => {
+    const { INDIVIDUAL_DECK } = Routes;
     const { navigation } = this.props;
-    navigation.navigate('IndividualDeck', deck);
+    navigation.navigate(INDIVIDUAL_DECK, deck);
   };
 
   deleteDecks = () => {
@@ -38,6 +41,7 @@ class Decks extends Component {
 
   renderDecks = () => {
     const { decks } = this.props;
+    const { category, cards, previousScore } = decks;
     const { deletionState } = this.state;
 
     return decks.map(deck => (
@@ -52,14 +56,24 @@ class Decks extends Component {
         >
           <Card
             title={deck.name}
+            fontFamily={Fonts.MAIN}
             containerStyle={deletionState ? styles.cardDeletionState : null}
           >
             <View style={styles.cardBadges}>
-              <Badge containerStyle={styles.badge}>
-                <Text>Category: {deck.category}</Text>
+              <Badge containerStyle={styles.categoryBadge}>
+                <MainText style={styles.badgeText}>
+                  Category: <AltText>{deck.category}</AltText>
+                </MainText>
               </Badge>
-              <Badge containerStyle={styles.badge}>
-                <Text>Cards: {deck.cards.length}</Text>
+              <Badge containerStyle={styles.cardsBadge}>
+                <MainText style={styles.badgeText}>
+                  Cards: <AltText>{deck.cards.length}</AltText>
+                </MainText>
+              </Badge>
+              <Badge containerStyle={styles.scoreBadge}>
+                <MainText style={styles.badgeText}>
+                  Score:<AltText>{deck.previousScore}%</AltText>
+                </MainText>
               </Badge>
             </View>
           </Card>
@@ -71,18 +85,17 @@ class Decks extends Component {
   EmptyListView = () => (
     <View>
       {this.props.decks.length > 0 || (
-        <Text
+        <MainText
           style={{
             textAlign: 'center',
             textAlignVertical: 'center',
             marginTop: 50,
             fontWeight: 'normal',
-            fontFamily: 'AvenirNext-Regular',
-            fontSize: 20,
+            fontSize: 20
           }}
         >
           Click '+' to add a Study Deck!
-        </Text>
+        </MainText>
       )}
     </View>
   );
@@ -148,7 +161,7 @@ class Decks extends Component {
     const { deletionState } = this.state;
 
     return (
-      <View style={{ flex: 1, backgroundColor: '#f3f3f3' }}>
+      <View style={styles.emptyListView}>
         <ScrollView style={{ margin: 0 }}>
           <this.EmptyListView />
           {this.renderDecks()}
@@ -166,7 +179,19 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   badge: {
-    backgroundColor: '#eeeeee'
+    backgroundColor: Colors.BLUE
+  },
+  scoreBadge: {
+    backgroundColor: Colors.BLUE
+  },
+  cardsBadge: {
+    backgroundColor: Colors.ALT_GREEN
+  },
+  categoryBadge: {
+    backgroundColor: Colors.YELLOW
+  },
+  badgeText: {
+    color: 'whitesmoke'
   },
   cardBadges: {
     flex: 1,
@@ -176,7 +201,10 @@ const styles = StyleSheet.create({
   cardDeletionState: {
     borderColor: '#f50057'
   },
-  listcontainer: {}
+  emptyListView: {
+    flex: 1,
+    backgroundColor: '#f3f3f3'
+  }
 });
 
 const mapStateToProps = state => ({

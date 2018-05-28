@@ -9,7 +9,7 @@ const Navigator = createStackNavigator({
   Decks: {
     screen: Decks,
     navigationOptions: {
-      title: 'Decks'
+      title: 'My Decks'
     }
   },
   AddDeck: {

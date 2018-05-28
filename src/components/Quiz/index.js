@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card, Button, Rating } from 'react-native-elements';
+import { connect } from 'react-redux';
+import {
+  clearLocalNotification,
+  setLocalNotification
+} from '../../utility/helpers';
+import { setScore } from '../../actions/deckActions';
+import { Fonts, Components, Colors } from '../../constants';
+const { MainText, AltText } = Components;
 
 class Quiz extends Component {
   state = {
@@ -17,10 +25,19 @@ class Quiz extends Component {
   }
 
   submitAnswer = answer => {
-    this.setState({
-      [answer]: this.state[answer] + 1,
-      counter: this.state.counter + 1
-    });
+    this.setState(
+      {
+        [answer]: this.state[answer] + 1,
+        counter: this.state.counter + 1,
+        showAnswer: false
+      },
+      () => {
+        if (this.state.counter === this.state.cards.length) {
+          this.setScore();
+          this.resetNotifications();
+        }
+      }
+    );
   };
 
   showAnswer = () => {
@@ -29,41 +46,12 @@ class Quiz extends Component {
     });
   };
 
-  quizView = () => {
-    const { cards, counter, showAnswer } = this.state;
-    return (
-      <View>
-        <Text style={styles.progressCurrent}>
-          {counter + 1}
-          <Text style={styles.progressTotal}>/{cards.length}</Text>
-        </Text>
-        <Card title={cards[counter].question}>
-          {showAnswer && (
-            <Text style={{ textAlign: 'center' }}>{cards[counter].answer}</Text>
-          )}
-        </Card>
-        <Button
-          title="Show Answer"
-          onPress={this.showAnswer}
-          backgroundColor={'#22A7F0'}
-          style={styles.correctButton}
-        />
-        <Button
-          title="Correct"
-          onPress={() => this.submitAnswer('correct')}
-          icon={{ name: 'check' }}
-          backgroundColor={'#66da50'}
-          style={styles.correctButton}
-        />
-        <Button
-          title="Incorrect"
-          icon={{ name: 'clear' }}
-          onPress={() => this.submitAnswer('incorrect')}
-          backgroundColor={'#f10056'}
-          style={styles.incorrectButton}
-        />
-      </View>
-    );
+  setScore = () => {
+    const { id } = this.props.navigation.state.params;
+    const { onSetScore } = this.props;
+    const { incorrect, correct } = this.state;
+    const scorePercentage = correct / (incorrect + correct) * 100;
+    onSetScore(id, scorePercentage);
   };
 
   restartQuiz = () => {
@@ -72,21 +60,77 @@ class Quiz extends Component {
     });
   };
 
+  resetNotifications = () => {
+    clearLocalNotification().then(setLocalNotification());
+  };
+
+  quizView = () => {
+    const { cards, counter, showAnswer } = this.state;
+    const currentCard = cards[counter];
+
+    return (
+      <View>
+        <AltText style={styles.progressCurrent}>
+          {counter + 1}
+          <AltText style={styles.progressTotal}>/{cards.length}</AltText>
+        </AltText>
+        <Card title={currentCard.question}>
+          {showAnswer && (
+            <MainText style={{ textAlign: 'center' }}>
+              {currentCard.answer}
+            </MainText>
+          )}
+        </Card>
+        <Button
+          title="Show Answer"
+          onPress={this.showAnswer}
+          backgroundColor={Colors.BLUE}
+          fontFamily={Fonts.ALT}
+          style={styles.correctButton}
+        />
+        <Button
+          title="Correct"
+          onPress={() => this.submitAnswer('correct')}
+          icon={{ name: 'check' }}
+          backgroundColor={Colors.GREEN}
+          fontFamily={Fonts.ALT}
+          style={styles.correctButton}
+        />
+        <Button
+          title="Incorrect"
+          icon={{ name: 'clear' }}
+          onPress={() => this.submitAnswer('incorrect')}
+          backgroundColor={Colors.RED}
+          fontFamily={Fonts.ALT}
+          style={styles.incorrectButton}
+        />
+      </View>
+    );
+  };
+
   completedQuizView = () => {
     const { cards, counter, correct, incorrect } = this.state;
     const rating = correct / counter * 5;
 
+    /* I figured due to the  immense small customizations
+    happening within this View, I'd just style inline instead of 
+    cluttering the StyleSheet. Not sure if this is the right move 
+    so I'll come back to it later*/
     return (
       <View style={styles.resultsContainer}>
-        <Text style={{ fontSize: 25, color: '#37AB61', fontWeight: 'bold' }}>
+        <MainText
+          style={{ fontSize: 25, color: Colors.ALT_GREEN, fontWeight: 'bold' }}
+        >
           Completed!
-        </Text>
-        <Text style={{ fontSize: 25, paddingTop: 20 }}>
-          <Text style={{ color: '#EEC149', fontSize: 35, paddingLeft: 10 }}>
+        </MainText>
+        <MainText style={{ fontSize: 25, paddingTop: 20 }}>
+          <MainText
+            style={{ color: Colors.YELLOW, fontSize: 35, paddingLeft: 10 }}
+          >
             {correct}
-          </Text>
-          <Text style={{ fontSize: 25 }}>/{cards.length}</Text>
-        </Text>
+          </MainText>
+          <MainText style={{ fontSize: 25 }}>/{cards.length}</MainText>
+        </MainText>
         <Rating
           showrating
           readonly
@@ -97,8 +141,9 @@ class Quiz extends Component {
         />
         <Button
           title="Restart Quiz"
+          fontFamily={Fonts.ALT}
           onPress={this.restartQuiz}
-          buttonStyle={{ marginTop: 50, backgroundColor: '#22A7F0' }}
+          buttonStyle={{ marginTop: 50, backgroundColor: Colors.BLUE }}
         />
       </View>
     );
@@ -123,7 +168,7 @@ const styles = StyleSheet.create({
   progressCurrent: {
     marginLeft: 20,
     fontSize: 25,
-    color: '#22A7F0'
+    color: Colors.BLUE
   },
   progressTotal: {
     fontSize: 15,
@@ -148,4 +193,8 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Quiz;
+const mapDispatchToProps = dispatch => ({
+  onSetScore: (id, score) => dispatch(setScore(id, score))
+});
+
+export default connect(null, mapDispatchToProps)(Quiz);

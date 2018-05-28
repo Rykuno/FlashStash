@@ -1,10 +1,5 @@
 import React, { Component } from 'react';
-import {
-  KeyboardAvoidingView,
-  Text,
-  TextInput,
-  StyleSheet
-} from 'react-native';
+import { KeyboardAvoidingView, TextInput, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import {
   FormLabel,
@@ -13,6 +8,7 @@ import {
   Button
 } from 'react-native-elements';
 import { addCard } from '../../actions/deckActions';
+import { Colors, Routes } from '../../constants';
 
 class AddCard extends Component {
   state = {
@@ -21,21 +17,19 @@ class AddCard extends Component {
   };
 
   addCard = () => {
+    const { INDIVIDUAL_DECK } = Routes;
     const { id } = this.props.navigation.state.params;
     const { onAddCard, navigation } = this.props;
     onAddCard(id, this.state);
-    navigation.navigate('IndividualDeck');
+    navigation.navigate(INDIVIDUAL_DECK);
   };
 
-  verifyInput = form => {
+  verifyInput = type => {
     let { question, answer } = this.state;
-    question = question.trim();
-    answer = answer.trim();
-
-    switch (form) {
-      case 'question':
+    switch (type) {
+      case InputType.QUESTION:
         return question.trim() ? '' : 'Question is required';
-      case 'answer':
+      case InputType.ANSWER:
         return answer.trim() ? '' : 'Answer is required';
       default:
         break;
@@ -43,34 +37,35 @@ class AddCard extends Component {
   };
 
   submitButtonDisabled = () => {
-    const questionVerified = this.verifyInput('quesiton');
-    const answerVerified = this.verifyInput('answer');
-    const verified = questionVerified !== '' && answerVerified !== '';
-    return verified ? true : false;
+    const questionVerified = this.verifyInput(InputType.QUESTION);
+    const answerVerified = this.verifyInput(InputType.ANSWER);
+    return !answerVerified && !questionVerified ? false : true;
   };
 
   render() {
+    const { question, answer } = this.state;
+
     return (
-      <KeyboardAvoidingView style={styles.container}>
+      <KeyboardAvoidingView enabled style={styles.container}>
         <FormLabel>Question</FormLabel>
         <FormInput
-          value={this.state.question}
-          onChangeText={e => this.setState({ question: e })}
+          value={question}
+          onChangeText={question => this.setState({ question })}
         />
         <FormValidationMessage>
-          {this.verifyInput('question')}
+          {this.verifyInput(InputType.QUESTION)}
         </FormValidationMessage>
         <FormLabel>Answer</FormLabel>
         <FormInput
-          value={this.state.answer}
-          onChangeText={e => this.setState({ answer: e })}
+          value={answer}
+          onChangeText={answer => this.setState({ answer })}
         />
         <FormValidationMessage>
-          {this.verifyInput('answer')}
+          {this.verifyInput(InputType.ANSWER)}
         </FormValidationMessage>
         <Button
           title="Submit"
-          backgroundColor={'#22A7F0'}
+          backgroundColor={Colors.BLUE}
           disabled={this.submitButtonDisabled()}
           onPress={this.addCard}
           icon={{ name: 'check' }}
@@ -80,6 +75,12 @@ class AddCard extends Component {
     );
   }
 }
+
+// Enum for Form Input Types
+const InputType = {
+  QUESTION: 'question',
+  ANSWER: 'answer'
+};
 
 const styles = StyleSheet.create({
   container: {

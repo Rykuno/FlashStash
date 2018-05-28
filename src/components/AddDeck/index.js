@@ -15,33 +15,37 @@ import {
   FormValidationMessage,
   Button
 } from 'react-native-elements';
+import { Routes, Colors } from '../../constants';
 
 class AddDeck extends Component {
   state = {
     name: '',
     category: '',
+    previousScore: 0,
     cards: []
   };
 
   createDeck = () => {
+    const { DECKS } = Routes;
     const { onAddDeck, navigation } = this.props;
+
+    //Add a uuid to the deck
     const deck = {
       ...this.state,
       id: uuidv1()
     };
+
+    //Add the deck to redux store and navigate back to the Deck List
     onAddDeck(deck);
-    navigation.navigate('Decks');
+    navigation.navigate(DECKS);
   };
 
-  verifyInput = form => {
-    let { name, category } = this.state;
-    name = name.trim();
-    category = category.trim();
-
-    switch (form) {
-      case 'name':
+  verifyInput = type => {
+    const { name, category } = this.state;
+    switch (type) {
+      case InputType.NAME:
         return name.trim() ? '' : 'Name is required';
-      case 'category':
+      case InputType.CATEGORY:
         return category.trim() ? '' : 'Category is required';
       default:
         break;
@@ -49,35 +53,42 @@ class AddDeck extends Component {
   };
 
   submitButtonDisabled = () => {
-    const nameVerified = this.verifyInput('name');
-    const categoryVerified = this.verifyInput('category');
+    const nameVerified = this.verifyInput(InputType.NAME);
+    const categoryVerified = this.verifyInput(InputType.CATEGORY);
     return !nameVerified && !categoryVerified ? false : true;
   };
 
   render() {
+    const { name, category } = this.state;
+
     return (
       <KeyboardAvoidingView style={styles.container}>
+        {/* Name Form Input */}
         <FormLabel>Name</FormLabel>
         <FormInput
-          value={this.state.name}
-          onChangeText={e => this.setState({ name: e })}
+          value={name}
+          onChangeText={name => this.setState({ name })}
         />
         <FormValidationMessage>
-          {this.verifyInput('name')}
+          {this.verifyInput(InputType.NAME)}
         </FormValidationMessage>
+
+        {/* Category Form Input */}
         <FormLabel>Category</FormLabel>
         <FormInput
-          value={this.state.category}
-          onChangeText={e => this.setState({ category: e })}
+          value={category}
+          onChangeText={category => this.setState({ category })}
         />
         <FormValidationMessage>
-          {this.verifyInput('category')}
+          {this.verifyInput(InputType.CATEGORY)}
         </FormValidationMessage>
+
+        {/* Submit Button */}
         <Button
           title="Submit"
           icon={{ name: 'check' }}
           disabled={this.submitButtonDisabled()}
-          backgroundColor={'#22A7F0'}
+          backgroundColor={Colors.BLUE}
           onPress={this.createDeck}
           style={styles.submitButton}
         />
@@ -85,6 +96,11 @@ class AddDeck extends Component {
     );
   }
 }
+
+const InputType = {
+  NAME: 'name',
+  CATEGORY: 'category'
+};
 
 const styles = StyleSheet.create({
   container: {

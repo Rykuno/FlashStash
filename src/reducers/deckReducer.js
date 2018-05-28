@@ -29,6 +29,21 @@ const deckReducer = (state = initialState, action) => {
           return obj;
         })
       };
+    case types.SET_SCORE:
+    console.log("SET_SCORE");
+    console.log(action.payload.score);
+    
+      return {
+        ...state,
+        decks: state.decks.map(deck => {
+          if (deck.id === action.payload.id) {
+            const newDeck = deck;
+            newDeck.previousScore = action.payload.score;
+            return newDeck;
+          }
+          return deck;
+        })
+      };
     default:
       return state;
   }
