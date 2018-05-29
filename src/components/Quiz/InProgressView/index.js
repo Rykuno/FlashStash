@@ -33,7 +33,7 @@ const InProgressView = ({
     />
     <Button
       title="Correct"
-      onPress={() => submitAnswer('correct')}
+      onPress={() => submitAnswer(AnswerType.CORRECT)}
       icon={{ name: 'check' }}
       backgroundColor={Colors.GREEN}
       fontFamily={Fonts.ALT}
@@ -42,13 +42,18 @@ const InProgressView = ({
     <Button
       title="Incorrect"
       icon={{ name: 'clear' }}
-      onPress={() => submitAnswer('incorrect')}
+      onPress={() => submitAnswer(AnswerType.INCORRECT)}
       backgroundColor={Colors.RED}
       fontFamily={Fonts.ALT}
       style={styles.incorrectButton}
     />
   </View>
 );
+
+const AnswerType = {
+  CORRECT: 'correct',
+  INCORRECT: 'incorrect'
+};
 
 const styles = StyleSheet.create({
   progressCurrent: {
