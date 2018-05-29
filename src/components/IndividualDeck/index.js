@@ -35,7 +35,6 @@ class IndividualDeck extends Component {
         split.splice(split.indexOf(word), 1);
       }
     }
-    console.log(split);
     return split.length > 1 ? `${split[0][0]}${split[1][0]}` : name[0];
   };
 

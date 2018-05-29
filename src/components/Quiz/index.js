@@ -7,7 +7,7 @@ import {
   setLocalNotification
 } from '../../utility/helpers';
 import { setScore } from '../../actions/deckActions';
-import { Fonts, Components, Colors } from '../../constants';
+import { Fonts, Components, Colors, Routes } from '../../constants';
 const { MainText, AltText } = Components;
 
 class Quiz extends Component {
@@ -56,8 +56,15 @@ class Quiz extends Component {
 
   restartQuiz = () => {
     this.setState({
-      counter: 0
+      counter: 0,
+      correct: 0,
+      incorrect: 0
     });
+  };
+
+  backToDeck = () => {
+    const { navigation } = this.props;
+    navigation.pop();
   };
 
   resetNotifications = () => {
@@ -144,6 +151,15 @@ class Quiz extends Component {
           fontFamily={Fonts.ALT}
           onPress={this.restartQuiz}
           buttonStyle={{ marginTop: 50, backgroundColor: Colors.BLUE }}
+        />
+        <Button
+          title="Back to Deck"
+          fontFamily={Fonts.ALT}
+          onPress={this.backToDeck}
+          buttonStyle={{
+            marginTop: 10,
+            backgroundColor: Colors.GREEN
+          }}
         />
       </View>
     );

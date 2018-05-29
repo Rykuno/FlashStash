@@ -26,7 +26,7 @@ class AddDeck extends Component {
   };
 
   createDeck = () => {
-    const { DECKS } = Routes;
+    const { INDIVIDUAL_DECK } = Routes;
     const { onAddDeck, navigation } = this.props;
 
     //Add a uuid to the deck
@@ -35,9 +35,9 @@ class AddDeck extends Component {
       id: uuidv1()
     };
 
-    //Add the deck to redux store and navigate back to the Deck List
+    //Add the deck to redux store and navigate to its Indivdual Deck view.
     onAddDeck(deck);
-    navigation.navigate(DECKS);
+    navigation.replace(INDIVIDUAL_DECK, { id: deck.id });
   };
 
   verifyInput = type => {
