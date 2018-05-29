@@ -175,10 +175,10 @@ const styles = StyleSheet.create({
     color: 'black'
   },
   incorrectButton: {
-    paddingTop: 10
+    marginTop: 10
   },
   correctButton: {
-    paddingTop: 40
+    marginTop: 40
   },
   container: {
     flex: 1,

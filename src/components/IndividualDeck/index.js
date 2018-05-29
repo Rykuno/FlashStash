@@ -29,7 +29,13 @@ class IndividualDeck extends Component {
     if (!name) {
       return '';
     }
-    const split = name.split(' ');
+    let split = name.split(' ');
+    for (word of split) {
+      if (!word) {
+        split.splice(split.indexOf(word), 1);
+      }
+    }
+    console.log(split);
     return split.length > 1 ? `${split[0][0]}${split[1][0]}` : name[0];
   };
 
@@ -40,7 +46,7 @@ class IndividualDeck extends Component {
     return (
       <View style={styles.container}>
         <ScrollView
-          endFillColor="blue"
+          endFillColor="transparent"
           contentContainerStyle={{
             alignItems: 'center',
             justifyContent: 'center'
@@ -59,7 +65,7 @@ class IndividualDeck extends Component {
           <View style={styles.badgeView}>
             <Badge containerStyle={styles.categoryBadge}>
               <MainText style={styles.badgeText}>
-                Category: <AltText>{category}</AltText>
+                Class: <AltText>{category}</AltText>
               </MainText>
             </Badge>
             <Badge containerStyle={styles.cardsBadge}>
@@ -75,29 +81,23 @@ class IndividualDeck extends Component {
           </View>
 
           <Divider style={styles.divider} />
-          <Button
-            title="Add Card"
-            icon={{ name: 'add' }}
-            backgroundColor={Colors.BLUE}
-            onPress={() => this.addCard(id)}
-            buttonStyle={styles.button}
-          />
-          <Button
-            title="Edit Deck"
-            icon={{ name: 'edit' }}
-            backgroundColor={Colors.YELLOW}
-            onPress={() => {}}
-            buttonStyle={styles.button}
-          />
-
-          <Button
-            title="Start Quiz"
-            onPress={() => this.startQuiz(deck)}
-            backgroundColor={Colors.GREEN}
-            icon={{ name: 'question-answer' }}
-            buttonStyle={styles.button}
-            disabled={cards.length === 0 ? true : false}
-          />
+          <View style={{ justifyContent: 'center' }}>
+            <Button
+              title="Add Card"
+              icon={{ name: 'add' }}
+              backgroundColor={Colors.BLUE}
+              onPress={() => this.addCard(id)}
+              buttonStyle={styles.button}
+            />
+            <Button
+              title="Start Quiz"
+              onPress={() => this.startQuiz(deck)}
+              backgroundColor={Colors.GREEN}
+              icon={{ name: 'question-answer' }}
+              buttonStyle={styles.button}
+              disabled={cards.length === 0 ? true : false}
+            />
+          </View>
         </ScrollView>
       </View>
     );
@@ -109,11 +109,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    paddingTop: 20,
     alignItems: 'center',
     backgroundColor: '#f3f3f3'
   },
   avatar: {
+    marginTop: 15,
     justifyContent: 'center',
     alignItems: 'center'
   },

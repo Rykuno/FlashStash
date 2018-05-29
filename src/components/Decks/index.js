@@ -62,7 +62,7 @@ class Decks extends Component {
             <View style={styles.cardBadges}>
               <Badge containerStyle={styles.categoryBadge}>
                 <MainText style={styles.badgeText}>
-                  Category: <AltText>{deck.category}</AltText>
+                  Class: <AltText>{deck.category}</AltText>
                 </MainText>
               </Badge>
               <Badge containerStyle={styles.cardsBadge}>
